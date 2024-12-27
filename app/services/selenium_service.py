@@ -17,17 +17,18 @@ class TwitterTrendsScraper:
         
     def setup_driver(self):
         options = webdriver.ChromeOptions()
-        # options.headless = True
-        options.add_argument("--headless=new")  # Use the new headless mode
-        options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
-        options.add_argument("--no-sandbox")  # Bypass OS security model
-        options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+        # Enabling headless mode 
+        options.add_argument("--headless=new")  
+
+        options.add_argument("--disable-gpu")  
+        options.add_argument("--no-sandbox")  
+        options.add_argument("--disable-dev-shm-usage")  
         options.add_argument("--start-maximized")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.driver = webdriver.Chrome(options=options)
 
+    # Simulates human like typing to avoid bot detection
     def human_like_typing(self, element, text):
-        """Simulate human-like typing with random delays"""
         for char in text:
             element.send_keys(char)
             time.sleep(random.uniform(0.1, 0.3))
@@ -88,7 +89,7 @@ class TwitterTrendsScraper:
         return False
     
 
-    
+    # in case Verification code  is required (THEN WE WILL HAVE TO DO THIS MANUALLY FOR WHICH TIME IS ALLOCATED HERE)
     def check_for_verification(self):
         """Check if phone/email verification is required and handle it"""
         try:
@@ -101,7 +102,6 @@ class TwitterTrendsScraper:
             if verification_elements:
                 # Wait for manual verification to complete
                 if self.wait_for_manual_verification():
-                    # After successful verification, save cookies
                     return True
                 else:
                     raise Exception("Verification timeout - please try again")
@@ -110,6 +110,7 @@ class TwitterTrendsScraper:
             pass
         return True
     
+    # Get the input element 
     def wait_for_element(self, by, value, timeout=10):
         try:
             element = WebDriverWait(self.driver, timeout).until(
@@ -119,7 +120,7 @@ class TwitterTrendsScraper:
         except TimeoutException:
             return None
     
-
+    # Tells whether current page is home page or not
     def is_home_page(self):
         try:
             home_indicators = [
@@ -135,7 +136,6 @@ class TwitterTrendsScraper:
     def check_for_input_type(self):
         page_source = self.driver.page_source
         
-        # Look for specific span text patterns
         if 'Enter your password' in page_source:
             return 'password'
         elif 'Enter your phone number or email address' in page_source:
@@ -242,6 +242,7 @@ class TwitterTrendsScraper:
             
             page_html = self.driver.page_source
             soup = BeautifulSoup(page_html, "html.parser")
+            # finding the divs that holds the trend
             trends = soup.find_all("div", {"data-testid": "trend"}, limit=5)
             
             trending_data = []
@@ -277,7 +278,6 @@ def login_and_fetch_X_trends():
             trends = scraper.get_trending_topics()
             ip_address = scraper.get_ip_address()
             
-            # Return as a tuple instead of a set
-            return (ip_address, trends)  # or return [ip_address, trends]
+            return (ip_address, trends) 
     finally:
         scraper.close()
