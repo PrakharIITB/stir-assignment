@@ -5,9 +5,9 @@
 {% block content %}
 <h1 class="text-center mb-4">Twitter Trends</h1>
 <div class="text-center mb-3">
-    <form method="POST" action="/fetch_trends">
+    <form method="GET" action="/fetch_trends">
         <button type="submit" class="btn btn-primary">Fetch Latest Trends</button>
-    </form>
+    </form>    
 </div>
 
 {% if trends %}
@@ -39,5 +39,9 @@
 </div>
 {% else %}
 <p class="text-center text-muted">No trends fetched yet. Click the button above to fetch the latest trends.</p>
+{% if error %}
+    <div>{{error}}</div>
+{% endif %}
+
 {% endif %}
 {% endblock %}

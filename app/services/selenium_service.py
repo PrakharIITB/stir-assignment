@@ -8,8 +8,7 @@ from bs4 import BeautifulSoup
 import json
 import time
 import random
-import os
-from config import Config
+from app.config import Config
 
 class TwitterTrendsScraper:
     def __init__(self,  manual_verify_timeout=300):
@@ -190,7 +189,7 @@ class TwitterTrendsScraper:
             step_count = 0
         
             while step_count < max_steps:
-                time.sleep(5)
+                time.sleep(3)
                 
                 if self.is_home_page():
                     return True
@@ -225,7 +224,7 @@ class TwitterTrendsScraper:
     # To get the current ip
     def get_ip_address(self):
         try:
-            time.sleep(10)
+            time.sleep(5)
             self.driver.get("http://httpbin.org/ip")
             response = self.driver.find_element(By.TAG_NAME, "body").text
             data = json.loads(response)
@@ -233,7 +232,8 @@ class TwitterTrendsScraper:
         except Exception as e:
             print(f"Error fetching IP address: {e}")
             return None
-            
+    
+    # Fetch the trending topics function
     def get_trending_topics(self):
         """Fetch trending topics with improved error handling"""
         try:
@@ -268,15 +268,16 @@ class TwitterTrendsScraper:
 # Example usage
 def login_and_fetch_X_trends():
     scraper = TwitterTrendsScraper()
-    TWITTER_USERNAME= Config.TWITTER_USERNAME
-    TWITTER_PASSWORD= Config.TWITTER_PASSWORD
-    TWITTER_EMAIL= Config.TWITTER_EMAIL
-
+    TWITTER_USERNAME = Config.TWITTER_USERNAME
+    TWITTER_PASSWORD = Config.TWITTER_PASSWORD
+    TWITTER_EMAIL = Config.TWITTER_EMAIL
+    
     try:
-        if scraper.login(TWITTER_USERNAME,TWITTER_PASSWORD,TWITTER_EMAIL):
+        if scraper.login(TWITTER_USERNAME, TWITTER_PASSWORD, TWITTER_EMAIL):
             trends = scraper.get_trending_topics()
             ip_address = scraper.get_ip_address()
-            print("Trending topics:", trends)
-            return {trends,ip_address}
+            
+            # Return as a tuple instead of a set
+            return (ip_address, trends)  # or return [ip_address, trends]
     finally:
         scraper.close()

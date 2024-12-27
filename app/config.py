@@ -11,3 +11,4 @@ class Config:
     PROXY_PORT = os.getenv('PROXY_PORT')
     TWITTER_USERNAME = os.getenv('TWITTER_USERNAME')
     TWITTER_PASSWORD = os.getenv('TWITTER_PASSWORD')
+    TWITTER_EMAIL = os.getenv('TWITTER_EMAIL')

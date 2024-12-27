@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, jsonify,request
-from app.services.selenium_service import get_ip_address, login_and_fetch_X_trends
+from app.services.selenium_service import  login_and_fetch_X_trends
 from app.services.mongodb_service import save_to_mongodb
 import os
 
@@ -9,30 +9,27 @@ main = Blueprint('main', __name__)
 def home():
     return render_template('index.html')
 
-@main.route('/fetch_trends', methods=['GET','POST'])
+@main.route('/fetch_trends', methods=['GET'])
 def fetch_trends():
     try:
-        twitter_username = os.getenv("TWITTER_USERNAME")
-        twitter_password = os.getenv("TWITTER_PASSWORD")
+        data = login_and_fetch_X_trends()
+        print("Raw data:", data)  # Debug print
+        
+        if not data or len(data) != 2:
+            return render_template('index.html', trends=None, error="Failed to fetch data")
+            
+        ip_address, trends = data
+        print(f"IP: {ip_address}, Trends: {trends}")  # Debug print
 
-        ip_address = get_ip_address()
-        # ip_address = "20.206.106.192"
-
-        print("ip_address : ",ip_address)
-
-        if not ip_address:
-            return render_template('index.html', trends=None, error="Failed to fetch IP address.")
-
-        trends = login_and_fetch_X_trends(twitter_username, twitter_password)
-        print("The trends are : ",trends)
-        # trends = ["Trendx1","Trendx2","Trendx3","Trendx4","Trendx5"]
-
-        if trends:
+        try:
             object_id = save_to_mongodb(trends, ip_address)
-            return render_template('index.html', trends=trends,object_id=object_id,ip_address=ip_address)
-        else:
-            return render_template('index.html', trends=None)
+            print(f"MongoDB Object ID: {object_id}")  # Debug print
+        except Exception as e:
+            return render_template('index.html', trends=trends, ip_address=ip_address, error=f"MongoDB Error: {str(e)}")
+
+        return render_template('index.html', trends=trends, object_id=str(object_id), ip_address=ip_address)
     except Exception as e:
+        print(f"Error: {str(e)}")  # Debug print
         return render_template('index.html', trends=None, error=str(e))
 
 
