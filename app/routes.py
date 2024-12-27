@@ -13,23 +13,23 @@ def home():
 def fetch_trends():
     try:
         data = login_and_fetch_X_trends()
-        print("Raw data:", data)  # Debug print
+        print("Raw data:", data) 
         
         if not data or len(data) != 2:
             return render_template('index.html', trends=None, error="Failed to fetch data")
             
         ip_address, trends = data
-        print(f"IP: {ip_address}, Trends: {trends}")  # Debug print
+        print(f"IP: {ip_address}, Trends: {trends}")  
 
         try:
             object_id = save_to_mongodb(trends, ip_address)
-            print(f"MongoDB Object ID: {object_id}")  # Debug print
+            print(f"MongoDB Object ID: {object_id}") 
         except Exception as e:
             return render_template('index.html', trends=trends, ip_address=ip_address, error=f"MongoDB Error: {str(e)}")
 
         return render_template('index.html', trends=trends, object_id=str(object_id), ip_address=ip_address)
     except Exception as e:
-        print(f"Error: {str(e)}")  # Debug print
+        print(f"Error: {str(e)}") 
         return render_template('index.html', trends=None, error=str(e))
 
 
