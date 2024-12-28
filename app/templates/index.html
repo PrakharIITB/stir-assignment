@@ -4,11 +4,15 @@
 
 {% block content %}
 <h1 class="text-center mb-4">Twitter Trends</h1>
-<div class="text-center mb-3">
-    <form method="GET" action="/fetch_trends">
+<div class="text-center mb-3 block">
+    <form method="GET" action="/fetch_trends" style="display: inline-block; margin-right: 20px;">
         <button type="submit" class="btn btn-primary">Fetch Latest Trends</button>
     </form>    
+    <form method="GET" action="/dashboard" style="display: inline-block;">
+        <button type="submit" class="btn btn-primary">Show Previous Trends</button>
+    </form>    
 </div>
+
 
 {% if trends %}
 <div class="table-responsive">

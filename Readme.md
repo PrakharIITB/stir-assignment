@@ -11,8 +11,8 @@ A Flask web application that fetches and displays the top 5 trending topics from
 
 ## Prerequisites
 
-- Python 3.8 or higher
-- Chrome browser installed
+- Python 3.10.12
+- Chrome browser and web driver installed
 - MongoDB instance (local or Atlas)
 - Twitter account credentials
 - Proxy server details (ProxyMesh)
@@ -94,17 +94,18 @@ http://localhost:5000
    - Display the trends on the webpage
 
 
-![alt text](image-1.png)
-![alt text](image.png)
-![alt text](image-2.png)
+![alt text](./images/image-1.png)
+![alt text](./images/image.png)
+![alt text](./images/image-2.png)
+![alt text](./images/image-3.png)
 
 ## Error Handling
 
 The application handles various error scenarios:
+- Various Login flows by twitter
 - Failed Twitter login attempts
-- Network connectivity issues
 - MongoDB connection problems
-- Proxy configuration errors
+- Proxy configuration errors and IP rotation using Proxymesh
 
 Error messages will be displayed on the web interface if any issues occur.
 
@@ -116,6 +117,3 @@ Error messages will be displayed on the web interface if any issues occur.
 4. Push to the branch
 5. Create a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.

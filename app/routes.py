@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify,request
 from app.services.selenium_service import  login_and_fetch_X_trends
-from app.services.mongodb_service import save_to_mongodb
+from app.services.mongodb_service import save_to_mongodb,get_all_records
 import os
 
 main = Blueprint('main', __name__)
@@ -31,6 +31,14 @@ def fetch_trends():
     except Exception as e:
         print(f"Error: {str(e)}") 
         return render_template('index.html', trends=None, error=str(e))
+
+@main.route('/dashboard', methods=['GET'])
+def dashboard():
+    try:
+        records = get_all_records()
+        return render_template('dashboard.html', records=records)
+    except Exception as e:
+        return render_template('dashboard.html', records=[], error=str(e))
 
 
 

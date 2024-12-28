@@ -18,13 +18,25 @@ class TwitterTrendsScraper:
     def setup_driver(self):
         options = webdriver.ChromeOptions()
         # Enabling headless mode 
-        options.add_argument("--headless=new")  
+        # options.add_argument("--headless=new")  
 
         options.add_argument("--disable-gpu")  
         options.add_argument("--no-sandbox")  
         options.add_argument("--disable-dev-shm-usage")  
         options.add_argument("--start-maximized")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
+
+
+        # SEtting up proxymesh things
+        PROXY_USERNAME = Config.PROXY_USERNAME
+        PROXY_PASSWORD = Config.PROXY_PASSWORD
+        PROXY_HOST = Config.PROXY_HOST
+        PROXY_PORT = Config.PROXY_PORT
+    
+        options.add_argument(f'--proxy-server=http://{PROXY_HOST}:{PROXY_PORT}')
+        options.add_argument(f'--proxy-auth={PROXY_USERNAME}:{PROXY_PASSWORD}')
+        options.add_argument(f'--proxy-bypass-list=<-loopback>')
+
         self.driver = webdriver.Chrome(options=options)
 
     # Simulates human like typing to avoid bot detection
@@ -33,12 +45,8 @@ class TwitterTrendsScraper:
             element.send_keys(char)
             time.sleep(random.uniform(0.1, 0.3))
 
-            
+    # this will help us in waiting for manual code injection by the user (If not headless otherwise we will quit here)   
     def wait_for_manual_verification(self):
-        """
-        Wait for manual verification to be completed.
-        Returns True if verification is completed, False if timeout occurs.
-        """
         print("\n=== MANUAL VERIFICATION REQUIRED ===")
         print("Please complete the verification in the browser.")
         print(f"You have {self.manual_verify_timeout} seconds to complete it.")
@@ -91,7 +99,6 @@ class TwitterTrendsScraper:
 
     # in case Verification code  is required (THEN WE WILL HAVE TO DO THIS MANUALLY FOR WHICH TIME IS ALLOCATED HERE)
     def check_for_verification(self):
-        """Check if phone/email verification is required and handle it"""
         try:
             verification_elements = self.driver.find_elements(By.XPATH, 
                 "//*[contains(text(), 'verification') or contains(text(), 'Verify') or \
@@ -148,6 +155,7 @@ class TwitterTrendsScraper:
             return 'verification'
         return None
     
+    # Handling inputing the value in the input field
     def handle_input_step(self, input_type, value):
         input_selectors = {
             'password': 'input[name="password"]',
@@ -179,9 +187,8 @@ class TwitterTrendsScraper:
             print(f"Error handling {input_type} input: {e}")
         return False
 
-            
+    # Login Initiates here
     def login(self, username: str, password: str,email:str):
-        """Attempt login with better error handling"""
         try:
             self.driver.get("https://x.com/i/flow/login")
         
@@ -235,7 +242,6 @@ class TwitterTrendsScraper:
     
     # Fetch the trending topics function
     def get_trending_topics(self):
-        """Fetch trending topics with improved error handling"""
         try:
             self.driver.get("https://x.com/explore/tabs/trending")
             time.sleep(random.uniform(3, 5))  # Random delay
@@ -261,8 +267,8 @@ class TwitterTrendsScraper:
             print(f"Error fetching trends: {e}")
             return []
             
+    #Clean up resources
     def close(self):
-        """Clean up resources"""
         self.driver.quit()
 
 
