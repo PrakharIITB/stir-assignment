@@ -16,6 +16,10 @@ class TwitterTrendsScraper:
         self.setup_driver()
         
     def setup_driver(self):
+
+        proxy_hosts = ["198.23.239.134", "207.244.217.165", "107.172.163.27", "64.137.42.112", "173.211.0.148", "161.123.152.115", "167.160.180.203", "154.36.110.199", "173.0.9.70", "173.0.9.209"]
+        proxy_ports = ["6540", "6712", "6543", "5157", "6641", "6360", "6754", "6853", "5653", "5792"]
+
         options = webdriver.ChromeOptions()
         # Enabling headless mode 
         # options.add_argument("--headless=new")  
@@ -30,8 +34,14 @@ class TwitterTrendsScraper:
         # SEtting up proxymesh things
         PROXY_USERNAME = Config.PROXY_USERNAME
         PROXY_PASSWORD = Config.PROXY_PASSWORD
-        PROXY_HOST = Config.PROXY_HOST
-        PROXY_PORT = Config.PROXY_PORT
+        # PROXY_HOST = Config.PROXY_HOST
+        # PROXY_PORT = Config.PROXY_PORT
+        index = random.randint(0, 9)
+        PROXY_HOST = proxy_hosts[index]
+        PROXY_PORT = proxy_ports[index]
+
+        # PROXY_HOST = "198.23.239.134"
+        # PROXY_PORT = "6540"
     
         options.add_argument(f'--proxy-server=http://{PROXY_HOST}:{PROXY_PORT}')
         options.add_argument(f'--proxy-auth={PROXY_USERNAME}:{PROXY_PASSWORD}')
@@ -41,9 +51,10 @@ class TwitterTrendsScraper:
 
     # Simulates human like typing to avoid bot detection
     def human_like_typing(self, element, text):
-        for char in text:
-            element.send_keys(char)
-            time.sleep(random.uniform(0.1, 0.3))
+        element.send_keys(text)
+        # for char in text:
+        #     element.send_keys(char)
+        #     time.sleep(random.uniform(0.1, 0.3))
 
     # this will help us in waiting for manual code injection by the user (If not headless otherwise we will quit here)   
     def wait_for_manual_verification(self):
@@ -161,7 +172,7 @@ class TwitterTrendsScraper:
             'password': 'input[name="password"]',
             'email_or_phone': 'input[data-testid="ocfEnterTextTextInput"]',
             'phone_or_username': 'input[data-testid="ocfEnterTextTextInput"]',
-            'username': 'input[autocomplete="username"]'
+            'username': 'input[autocomplete="username"]',
         }
         
         selector = input_selectors.get(input_type)
@@ -181,7 +192,7 @@ class TwitterTrendsScraper:
                     
                 time.sleep(random.uniform(0.5, 1.5))
                 input_field.send_keys(Keys.ENTER)
-                time.sleep(3)
+                # time.sleep(2)
                 return True
         except Exception as e:
             print(f"Error handling {input_type} input: {e}")
@@ -196,7 +207,7 @@ class TwitterTrendsScraper:
             step_count = 0
         
             while step_count < max_steps:
-                time.sleep(3)
+                # time.sleep(3)
                 
                 if self.is_home_page():
                     return True
@@ -231,7 +242,7 @@ class TwitterTrendsScraper:
     # To get the current ip
     def get_ip_address(self):
         try:
-            time.sleep(5)
+            time.sleep(2)
             self.driver.get("http://httpbin.org/ip")
             response = self.driver.find_element(By.TAG_NAME, "body").text
             data = json.loads(response)
@@ -250,7 +261,6 @@ class TwitterTrendsScraper:
             soup = BeautifulSoup(page_html, "html.parser")
             # finding the divs that holds the trend
             trends = soup.find_all("div", {"data-testid": "trend"}, limit=5)
-            
             trending_data = []
             for trend in trends:
                 try:
